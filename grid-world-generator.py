@@ -9,11 +9,23 @@ import glob
 import IPython
 
 
+def pickStartEnd(Z, width, height):
+
+    A,B = rr.choice(range(0,height)), rr.choice(range(0,width))
+    while Z[A][B]!=1:
+        A,B = rr.choice(range(0,height)), rr.choice(range(0,width))
+    Z[A][B] = 2
+    
+    C,D = rr.choice(range(0,height)), rr.choice(range(0,width))
+    while Z[C][D]!=1 and C!=A and D!=B:
+        C,D = rr.choice(range(0,height)), rr.choice(range(0,width))
+    Z[C][D] = 3
+    
 def backTrackerMaze(number, width=10, height=10):
    
     shape = (height,width)
     # Build actual maze
-    Z = np.ones(shape, dtype=bool) # Maze-grid: 1's are black, 0's are white
+    Z = np.ones(shape, dtype=int) # Maze-grid: 1's are black, 0's are white
 
     # Inititally set all cells as unvisited.
     Y = np.zeros(shape, dtype=bool) # Visted or not
@@ -82,9 +94,10 @@ def backTrackerMaze(number, width=10, height=10):
             B = p[1]
         else:
             break
-   
+
+    pickStartEnd(Z,height,width)
     plt.figure()
-    plt.imshow(Z, cmap=plt.cm.binary, interpolation='nearest')
+    plt.imshow(Z, cmap=plt.cm.plasma, interpolation='nearest')
     plt.xticks([]), plt.yticks([])
     plt.savefig("pics/backTrackerMazes/backTrackerMaze{0:0=2d}.png".format(number))
     np.savetxt("arrs/backTrackerMazes/{0:0=2d}.txt".format(number),Z,fmt='%d')
@@ -92,8 +105,9 @@ def backTrackerMaze(number, width=10, height=10):
 def randGridMaze(number, width=10, height=10):
     shape = (height,width)
     Z = np.random.choice([0,1], size=shape, p=[.70,.30])
+    pickStartEnd(Z,height,width)
     plt.figure()
-    plt.imshow(Z, cmap=plt.cm.binary, interpolation='nearest')
+    plt.imshow(Z, cmap=plt.cm.plasma, interpolation='nearest')
     plt.xticks([]), plt.yticks([])
     plt.savefig("pics/randGrid/maze{0:0=2d}.png".format(number))
     np.savetxt("arrs/randGrid/{0:0=2d}.txt".format(number),Z,fmt='%d')
