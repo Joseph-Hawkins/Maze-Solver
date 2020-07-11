@@ -8,7 +8,7 @@ import multiprocessing
 import glob
 import IPython
 import heapq
-import tree # might be broken
+from tree import Node# might be broken
 
 height=10 # change later when maze gets larger
 width=10
@@ -19,7 +19,7 @@ def findStart(Z):#gets the coordinate of the start position
     row=start[0][0]
     column=start[1][0]
     print("start position" , Z[row][column])
-    return [row, column]
+    return (row, column)
 
 def findGoal(Z):#gets the coordinate of the goal position
     goal =np.where((Z==3))  # goal position has value of 3
@@ -27,61 +27,61 @@ def findGoal(Z):#gets the coordinate of the goal position
     row=goal[0][0]
     column=goal[1][0]
     print("goal position" , Z[row][column])
-    return [row, column]
+    return (row, column)
 
-def goThroughTree(goal, start)
+def goThroughTree(goal, start):
     solution = []
-    while(goal is not start)
+    while(goal is not start):
         coord = [goal.row, goal.col] 
         solution.append([coord])
         goal = goal.parent
     return solution
 
 def visitNeighbors(Z, start, goal, openList):#checks for unblocked neighbors of a current node in the N,S,E,W
-    if start.row + 1  in range(height)
-        node = Node(curr, (start.row+1,start.col), curr.g+1, [goal.row, goal.col])
+    if start.row + 1  in range(height):
+        node = Node(start, (start.row+1,start.col), start.g+1, [goal.row, goal.col])
         heapq.heappush(openList, node)
-    if start.row - 1  in range(height)
-        node = Node(curr, (start.row+1,start.col), curr.g+1, [goal.row, goal.col])
+    if start.row - 1  in range(height):
+        node = Node(start, (start.row+1,start.col), start.g+1, [goal.row, goal.col])
         heapq.heappush(openList, node)
-    if start.col + 1  in range(width)
-        node = Node(curr, (start.row+1,start.col), curr.g+1, [goal.row, goal.col])
+    if start.col + 1  in range(width):
+        node = Node(start, (start.row+1,start.col), start.g+1, [goal.row, goal.col])
         heapq.heappush(openList, node)
-    if start.col - 1  in range(width)
-        node = Node(curr, (start.row+1,start.col), curr.g+1, [goal.row, goal.col])
+    if start.col - 1  in range(width):
+        node = Node(start, (start.row+1,start.col), start.g+1, [goal.row, goal.col])
         heapq.heappush(openList, node)
 
 def getNeighbors(Z, s, goal): # gets the possible states from s given the action of moving one square in the maze 
     neighbors = []
-    if s.row + 1  in range(height) and Z[s.row+1][s.col] == 0
-        node = Node(curr, (s.row+1,s.col), curr.g+1, [goal.row, goal.col])
+    if s.row + 1  in range(height) and Z[s.row+1][s.col] == 0:
+        node = Node(s, (s.row+1,s.col), s.g+1, [goal.row, goal.col])
         neighbors.append(node)
-    if s.row - 1  in range(height) and Z[s.row-1][s.col] == 0
-        node = Node(curr, (s.row+1,s.col), curr.g+1, [goal.row, goal.col])
+    if s.row - 1  in range(height) and Z[s.row-1][s.col] == 0:
+        node = Node(s, (s.row-1,s.col), s.g+1, [goal.row, goal.col])
         neighbors.append(node)
-    if s.col + 1  in range(width) and Z[s.row][s.col+1] == 0
-        node = Node(curr, (s.row+1,s.col), curr.g+1, [goal.row, goal.col])
+    if s.col + 1  in range(width) and Z[s.row][s.col+1] == 0:
+        node = Node(s, (s.row,s.col + 1), s.g+1, [goal.row, goal.col])
         neighbors.append(node)
-    if s.col - 1  in range(width) and Z[s.row][s.col-1] ==0
-        node = Node(curr, (s.row+1,s.col), curr.g+1, [goal.row, goal.col])
+    if s.col - 1  in range(width) and Z[s.row][s.col-1] ==0:
+        node = Node(s, (s.row,s.col-1), s.g+1, [goal.row, goal.col])
         neighbors.append(node)
     return neighbors
 
 def isInClosedList(closedList, node):
     for x in closedList:
-        if x.row == node.row and x.col = node.col
-            return true
-    return false
+        if x.row == node.row and x.col == node.col:
+            return True
+    return False
 
 def computePath(start, goal, Z):
     #initialize open list
     openList = []
     visitNeighbors(Z, start, goal, openList)
     closedList = []
-    while goal.g > openList[0]: # if openList is empty this will throw an error
-        s = heapq.pop(openList)
+    while goal.g > openList[0].g: # if openList is empty this will throw an error
+        s = heapq.heappop(openList)
         if s.row == goal.row and s.col == goal.col:
-            goThroughTree(goal, start)
+            return goThroughTree(goal,start)
             
         if isInClosedList(closedList, s):
             continue
@@ -95,7 +95,9 @@ def computePath(start, goal, Z):
                 # search through the open list and remove old g(x) this would take more time but reduce memory usage
                 heapq.heappush(openList, x)
 
-        #if open list empty stop
+        if len(openList) == 0:               #if open list empty stop
+            return None
+            stop
 
 
 
@@ -122,14 +124,18 @@ if __name__ == "__main__":
     counter = 0
 
     #initialize the start and goal nodes
-    start = Node(start, None, findStart(Z), 0, 0) #start is represented as a 2 in the txt document
-    goal = Node(goal, None, findGoal(Z), 0, 0) #goal is represented as a 3 in the txt document
 
+    gpos = findGoal(Z)
+    spos = findStart(Z)
+    start = Node(None, spos, 0, gpos) #start is represented as a 2 in the txt document
+    goal = Node(None, gpos, 999999, gpos) #goal is represented as a 3 in the txt document
 
+    sol = computePath(start, goal, Z)
+    print(sol)
     #create an open list
     #create a closed list that is a 2D array 
     
-    f.close()
+
 
     
 

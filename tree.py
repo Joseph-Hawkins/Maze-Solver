@@ -4,13 +4,24 @@ class Node:
         self.row = position[0]
         self.col = position[1]
         self.g = g #cost to get to this node from the starting point
-        self.h = manhattan(gPosition) #heuristic:= manhattan distance 
-        self.f = g+h 
+        self.h = self.manhattan(gPosition) #heuristic:= manhattan distance 
+        self.f = self.g+self.h 
         self.search = 0
     def __cmp__(self, other): # for putting nodes into the heap
         return cmp(self.f, other.f)
 
-    def manhattan(gPosition): #gives the manhattan distance from current node to the goal node
+    def __lt__(self, other): ## for <
+        if self.f < other.f:
+            return True
+        else:
+            return False
+    def __le__(self,other):  ##for <=
+        if self.f <= other.f:
+            return True
+        else:
+            return False
+        
+    def manhattan(self, gPosition): #gives the manhattan distance from current node to the goal node
         # write this function so it will take nodes as inputs
         x1=self.row
         y1=self.col
