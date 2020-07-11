@@ -1,22 +1,28 @@
 class Node:
-    def __init__(self, blocked):
-        self.north = None
-        self.south = None
-        self.east = None
-        self.west = None
-        self.data = blocked # 1 if blocked and 0 if unblocked
-        self.g = None
-        self.h = None
-        self.position = None
-        #heuristic and cost to come needed
+    def __init__(self, parent, position, g, gPosition):
+        self.parent = parent
+        self.row = position[0]
+        self.col = position[1]
+        self.g = g #cost to get to this node from the starting point
+        self.h = manhattan(gPosition) #heuristic:= manhattan distance 
+        self.f = g+h 
+        self.search = 0
+    def __cmp__(self, other): # for putting nodes into the heap
+        return cmp(self.f, other.f)
 
-def manhattan(): #h(n)
-    x1=5
-    y1=5
-    x2=0
-    y2=0
-    distance = abs(x1-x2)+abs(y1-y2)
-    return distance
+    def manhattan(gPosition): #gives the manhattan distance from current node to the goal node
+        # write this function so it will take nodes as inputs
+        x1=self.row
+        y1=self.col
+        x2=gPosition[0]
+        y2=gPosition[1]
+        distance = abs(x1-x2)+abs(y1-y2)
+        return distance #h(n)
+
+
+# infinity represented as 1,000,000
+
+
 
 #function to calculate f(n) = g(n) + h(n)
 
