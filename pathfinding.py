@@ -48,7 +48,7 @@ def goThroughTree(goal, start):
     solution = []
     while(goal is not start):
         coord = [goal.row, goal.col] 
-        solution.append(coord)
+        solution.insert(0,coord)
         goal = goal.parent
     return solution
 
@@ -81,7 +81,7 @@ def computePath(start, goal, Maze):
     closedList = []
     while openList and goal.g >= (openList[0].g + openList[0].h): # if openList is empty this will throw an error
         s = heapq.heappop(openList)
-        print(s.row, " ", s.col)
+        ##print(s.row, " ", s.col)
 
         if s.row == goal.row and s.col == goal.col:
             print("found found found found found!")
@@ -102,6 +102,7 @@ def computePath(start, goal, Maze):
                             openList.remove(y)
                 heapq.heappush(openList, x)
 
+    return None ## failed to find
 
 
 
@@ -135,12 +136,28 @@ if __name__ == "__main__":
     Maze = initializeMaze(Z,gpos);  ## initial the maze which is like a gridworld
 
     start = Maze[spos[0]][spos[1]]
+    #update visible nodes
     goal = Maze[gpos[0]][gpos[1]]
 
-    sol = computePath(start, goal, Maze)
+    while start.row != goal.row or start.col != goal.col:
+        counter = counter + 1
+        start.search = counter 
+        sol = computePath(start, goal, Maze)
+        if sol is None:
+            print("No solution found")
+            stop
+        for x in sol:
+            if Z[x[0]][x[1]] == 1:
+                break
+            start = Maze[x[0]][x[1]]
+            ##update visible nodes
+        
+        print(start.row, " ", start.col)
+
+    start = Maze[spos[0]][spos[1]]
+    sol = goThroughTree(goal,start)
+
     print(sol)
-
-
     
 
 
