@@ -50,7 +50,6 @@ def goThroughTree(goal, start):
         goal = goal.parent
     return solution
 
-
 def getNeighbors(Maze, s, goal): # gets the possible states from s given the action of moving one square in the maze 
     neighbors = []
     if s.row + 1  in range(height) and Z[s.row+1][s.col] != 1:#Northern neighbor
@@ -108,7 +107,25 @@ def showPath(sol, Z): #prints path computed by A*
     print(Z)
     #change so it writes into a text file
 
+def updateVisibleNodes(s, Maze):#updates surrounding squares that become visible when the agent moves
+    if s.row + 1 in range(height) and Maze[s.row+1][s.col].visible == 0:
+        Maze[s.row+1][s.col].visible = 1 #make northern neighbor visible
+        #Maze[s.row+1][s.col].blocked = Z[s.row+1][s.col] #change blocked or unblocked value 
+    if s.row - 1 in range(height) and Maze[s.row-1][s.col].visible == 0:
+        Maze[s.row-1][s.col].visible = 1 #make southern neighbor visible
+    if s.col + 1 in range(width) and Maze[s.row][s.col+1].visible == 0:
+        Maze[s.row][s.col+1].visible = 1 #make eastern neighbor visible
+    if s.col - 1 in range(width) and Maze[s.row][s.col-1].visible == 0:
+        Maze[s.row][s.col+1].visible = 1 #make western neighbor visible
+    return Maze
 
+def printVisibleNodes(Maze):#prints nodes seen while performing search
+    visible = [[0 for row in range(height)] for col in range(width)]
+    print("*****Positions of seen nodes*****")
+    for i, row in enumerate(Maze):
+        for j, cell in enumerate(row):
+            visible[i][j] = Maze[i][j].visible
+        print (visible[i])
 
 
 #*** NEED****
@@ -119,8 +136,7 @@ def showPath(sol, Z): #prints path computed by A*
 # Additionally prioritize N,S,E,W directions
 
 if __name__ == "__main__":
-
-    # if mac or if windows
+    # handles mac or windows path differences
     if sys.argv[2] == "m":
         path = "arrs/backTrackerMazes/" + sys.argv[1]
     if sys.argv[2] == "w":
@@ -128,18 +144,14 @@ if __name__ == "__main__":
 
     Z = np.loadtxt(path, delimiter = ' ').astype(int) 
     print(Z)
-
-    
     counter = 0
-
     #find the start and goal nodes
-    
     gpos = findGoal(Z)
     spos = findStart(Z)
     Maze = initializeMaze(Z,gpos);  ## initial the maze which is like a gridworld
 
     start = Maze[spos[0]][spos[1]]
-    #update visible nodes
+    Maze = updateVisibleNodes(start, Maze)#update visible nodes
     goal = Maze[gpos[0]][gpos[1]]
 
     while start.row != goal.row or start.col != goal.col:
@@ -150,17 +162,19 @@ if __name__ == "__main__":
             print("No solution found")
             stop
         for x in sol:
-            if Z[x[0]][x[1]] == 1:
+            if Z[x[0]][x[1]] == 1:#checks if nodes on our A* path are blocked
                 break
             start = Maze[x[0]][x[1]]
-            ##update visible nodes
+            Maze = updateVisibleNodes(start, Maze)#update visible nodes
         
-        print(start.row, " ", start.col)
+        #print(start.row, " ", start.col) # prints the end of our solution
 
     start = Maze[spos[0]][spos[1]]
     sol = goThroughTree(goal,start)
-
     print(sol)
+    showPath(sol,Z)
+    printVisibleNodes(Maze)
+    
     
 
 
