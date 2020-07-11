@@ -24,6 +24,7 @@ def initializeMaze(Z, gPosition):   ##creates Nodes for each cell in the grid
             if Z[i][j] == 2:
                 Maze[i][j].ctype =2
                 Maze[i][j].g = 0
+                Maze[i][j].visible = 1
             if Z[i][j] == 3:
                 Maze[i][j].ctype= 3
     return Maze
