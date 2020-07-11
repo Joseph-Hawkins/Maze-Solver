@@ -1,12 +1,14 @@
 class Node:
-    def __init__(self, parent, position, g, gPosition):
+    def __init__(self, parent, position, gPosition):
         self.parent = parent
         self.row = position[0]
         self.col = position[1]
-        self.g = g #cost to get to this node from the starting point
+        self.g = 1000000 #cost to get to this node from the starting point
         self.h = self.manhattan(gPosition) #heuristic:= manhattan distance 
         self.f = self.g+self.h 
         self.search = 0
+        self.visible = 0
+        self.ctype = 0
     def __cmp__(self, other): # for putting nodes into the heap
         return cmp(self.f, other.f)
 

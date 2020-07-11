@@ -13,6 +13,21 @@ from tree import Node# might be broken
 height=10 # change later when maze gets larger
 width=10
 
+def initializeMaze(Z, gPosition):   ##creates Nodes for each cell in the grid
+    Maze = [[None for _ in range(height)] for _ in range(width)]
+
+    for i, row in enumerate(Z):
+        for j, cell in enumerate(row):
+            Maze[i][j] = Node(None,(i,j),gPosition)
+            if Z[i][j] == 1:
+                Maze[i][j].ctype = 1
+            if Z[i][j] == 2:
+                Maze[i][j].ctype =2
+                Maze[i][j].g = 0
+            if Z[i][j] == 3:
+                Maze[i][j].ctype= 3
+    return Maze
+    
 def findStart(Z):#gets the coordinate of the start position
     start = np.where((Z==2)) # starting position has value of 2
     print("position of start", start)
@@ -37,33 +52,20 @@ def goThroughTree(goal, start):
         goal = goal.parent
     return solution
 
-def visitNeighbors(Z, start, goal, openList):#checks for unblocked neighbors of a current node in the N,S,E,W
-    if start.row + 1  in range(height):
-        node = Node(start, (start.row+1,start.col), 99999, [goal.row, goal.col])
-        heapq.heappush(openList, node)
-    if start.row - 1  in range(height):
-        node = Node(start, (start.row-1,start.col), 99999, [goal.row, goal.col])
-        heapq.heappush(openList, node)
-    if start.col + 1  in range(width):
-        node = Node(start, (start.row,start.col+1), 99999, [goal.row, goal.col])
-        heapq.heappush(openList, node)
-    if start.col - 1  in range(width):
-        node = Node(start, (start.row+1,start.col-1), 99999, [goal.row, goal.col])
-        heapq.heappush(openList, node)
 
-def getNeighbors(Z, s, goal): # gets the possible states from s given the action of moving one square in the maze 
+def getNeighbors(Maze, s, goal): # gets the possible states from s given the action of moving one square in the maze 
     neighbors = []
     if s.row + 1  in range(height) and Z[s.row+1][s.col] != 1:
-        node = Node(s, (s.row+1,s.col), 99999, [goal.row, goal.col])
+        node = Maze[s.row+1][s.col]
         neighbors.append(node)
     if s.row - 1  in range(height) and Z[s.row-1][s.col] != 1:
-        node = Node(s, (s.row-1,s.col), 99999, [goal.row, goal.col])
+        node = Maze[s.row-1][s.col]
         neighbors.append(node)
     if s.col + 1  in range(width) and Z[s.row][s.col+1] != 1:
-        node = Node(s, (s.row,s.col + 1), 99999, [goal.row, goal.col])
+        node = Maze[s.row][s.col+1]
         neighbors.append(node)
     if s.col - 1  in range(width) and Z[s.row][s.col-1] != 1:
-        node = Node(s, (s.row,s.col-1), 99999, [goal.row, goal.col])
+        node = Maze[s.row][s.col-1]
         neighbors.append(node)
     return neighbors
 
@@ -73,26 +75,26 @@ def isInClosedList(closedList, node):
             return True
     return False
 
-def computePath(start, goal, Z):
-    #initialize open list
-    openList = []
-    ##visitNeighbors(Z, start, goal, openList)
+def computePath(start, goal, Maze):
+    openList = [] ##initialize Open List
     heapq.heappush(openList,start)
     closedList = []
-    while openList and goal.g > openList[0].g: # if openList is empty this will throw an error
+    while openList and goal.g >= (openList[0].g + openList[0].h): # if openList is empty this will throw an error
         s = heapq.heappop(openList)
-        ##print(Z[s.row,s.col], " " ,s.row, " ", s.col)
+        print(s.row, " ", s.col)
+
         if s.row == goal.row and s.col == goal.col:
             print("found found found found found!")
             return goThroughTree(s,start)
-            
+   
         if isInClosedList(closedList, s):
             continue
         closedList.append(s)
-        neighbors = getNeighbors(Z, s, goal)
+        neighbors = getNeighbors(Maze, s, goal)
         for x in neighbors:#for all actions a in A(s)
             if x.g > s.g+1: # a cheaper cost has been found to reach state x
                 x.g = s.g+1
+                x.f = x.g + x.h
                 x.parent = s # we now get to x from state s
                 # search through the open list and remove old g(x) this would take more time but reduce memory usage
                 for y in openList:
@@ -123,19 +125,22 @@ if __name__ == "__main__":
     Z = np.loadtxt(path, delimiter = ' ').astype(int) 
     print(Z)
 
+    
     counter = 0
 
-    #initialize the start and goal nodes
-
+    #find the start and goal nodes
+    
     gpos = findGoal(Z)
     spos = findStart(Z)
-    start = Node(None, spos, 0, gpos) #start is represented as a 2 in the txt document
-    goal = Node(None, gpos, 999999, gpos) #goal is represented as a 3 in the txt document
+    Maze = initializeMaze(Z,gpos);  ## initial the maze which is like a gridworld
 
-    sol = computePath(start, goal, Z)
+    start = Maze[spos[0]][spos[1]]
+    goal = Maze[gpos[0]][gpos[1]]
+
+    sol = computePath(start, goal, Maze)
     print(sol)
-    #create an open list
-    #create a closed list that is a 2D array 
+
+
     
 
 
