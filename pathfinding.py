@@ -8,7 +8,7 @@ import multiprocessing
 import glob
 import IPython
 import heapq
-from tree import Node# might be broken
+from tree import Node
 
 height=10 # change later when maze gets larger
 width=10
@@ -30,18 +30,16 @@ def initializeMaze(Z, gPosition):   ##creates Nodes for each cell in the grid
     
 def findStart(Z):#gets the coordinate of the start position
     start = np.where((Z==2)) # starting position has value of 2
-    print("position of start", start)
     row=start[0][0]
     column=start[1][0]
-    print("start position" , Z[row][column])
+    print("start position:" , "(", row, ",", column, ")")
     return (row, column)
 
 def findGoal(Z):#gets the coordinate of the goal position
     goal =np.where((Z==3))  # goal position has value of 3
-    print("position of goal", goal)
     row=goal[0][0]
     column=goal[1][0]
-    print("goal position" , Z[row][column])
+    print("goal position:" , "(", row, ",", column, ")")
     return (row, column)
 
 def goThroughTree(goal, start):
@@ -55,16 +53,16 @@ def goThroughTree(goal, start):
 
 def getNeighbors(Maze, s, goal): # gets the possible states from s given the action of moving one square in the maze 
     neighbors = []
-    if s.row + 1  in range(height) and Z[s.row+1][s.col] != 1:
+    if s.row + 1  in range(height) and Z[s.row+1][s.col] != 1:#Northern neighbor
         node = Maze[s.row+1][s.col]
         neighbors.append(node)
-    if s.row - 1  in range(height) and Z[s.row-1][s.col] != 1:
+    if s.row - 1  in range(height) and Z[s.row-1][s.col] != 1:#Southern neighbor
         node = Maze[s.row-1][s.col]
         neighbors.append(node)
-    if s.col + 1  in range(width) and Z[s.row][s.col+1] != 1:
+    if s.col + 1  in range(width) and Z[s.row][s.col+1] != 1:#Eastern neighbor
         node = Maze[s.row][s.col+1]
         neighbors.append(node)
-    if s.col - 1  in range(width) and Z[s.row][s.col-1] != 1:
+    if s.col - 1  in range(width) and Z[s.row][s.col-1] != 1:#Western neighbor
         node = Maze[s.row][s.col-1]
         neighbors.append(node)
     return neighbors
@@ -79,12 +77,12 @@ def computePath(start, goal, Maze):
     openList = [] ##initialize Open List
     heapq.heappush(openList,start)
     closedList = []
-    while openList and goal.g >= (openList[0].g + openList[0].h): # if openList is empty this will throw an error
+    while openList and goal.g >= (openList[0].g + openList[0].h): # if openList is empty or if no shorter path is found we exit 
         s = heapq.heappop(openList)
         ##print(s.row, " ", s.col)
 
         if s.row == goal.row and s.col == goal.col:
-            print("found found found found found!")
+            print("*****PATH FOUND!*****")
             return goThroughTree(s,start)
    
         if isInClosedList(closedList, s):
@@ -104,6 +102,11 @@ def computePath(start, goal, Maze):
 
     return None ## failed to find
 
+def showPath(sol, Z): #prints path computed by A*
+    for x in sol:
+        Z[x[0]][x[1]] = 9 #change path to *'s
+    print(Z)
+    #change so it writes into a text file
 
 
 
