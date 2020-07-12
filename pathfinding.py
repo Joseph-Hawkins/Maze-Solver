@@ -53,18 +53,19 @@ def goThroughTree(goal, start):
 
 def getNeighbors(Maze, s, goal): # gets the possible states from s given the action of moving one square in the maze 
     neighbors = []
-    if s.row + 1  in range(height) and Z[s.row+1][s.col] != 1:#Northern neighbor
+    if s.row + 1  in range(height) and (Z[s.row+1][s.col] != 1 or Maze[s.row+1][s.col].visible == 0):#Northern neighbor
         node = Maze[s.row+1][s.col]
         neighbors.append(node)
-    if s.row - 1  in range(height) and Z[s.row-1][s.col] != 1:#Southern neighbor
+    if s.row - 1  in range(height) and (Z[s.row-1][s.col] != 1 or Maze[s.row-1][s.col].visible == 0):#Southern neighbor
         node = Maze[s.row-1][s.col]
         neighbors.append(node)
-    if s.col + 1  in range(width) and Z[s.row][s.col+1] != 1:#Eastern neighbor
+    if s.col + 1  in range(width) and (Z[s.row][s.col+1] != 1 or Maze[s.row][s.col+1].visible == 0):#Eastern neighbor
         node = Maze[s.row][s.col+1]
         neighbors.append(node)
-    if s.col - 1  in range(width) and Z[s.row][s.col-1] != 1:#Western neighbor
+    if s.col - 1  in range(width) and (Z[s.row][s.col-1] != 1 or Maze[s.row][s.col-1].visible == 0):#Western neighbor
         node = Maze[s.row][s.col-1]
         neighbors.append(node)
+    #print("neighbors of", s.row, s.col, " ", neighbors)
     return neighbors
 
 def isInClosedList(closedList, node):
@@ -73,7 +74,8 @@ def isInClosedList(closedList, node):
             return True
     return False
 
-def computePath(start, goal, Maze):
+def computePath(start, goal, Maze, counter):
+    print("current start position", start.row, start.col)
     openList = [] ##initialize Open List
     heapq.heappush(openList,start)
     closedList = []
@@ -90,7 +92,13 @@ def computePath(start, goal, Maze):
         closedList.append(s)
         neighbors = getNeighbors(Maze, s, goal)
         for x in neighbors:#for all actions a in A(s)
+            if x.search < counter:#reset nodes
+                #print("test")
+                x.g = 1000000
+                x.search = counter
+            
             if x.g > s.g+1: # a cheaper cost has been found to reach state x
+                #print("test2")
                 x.g = s.g+1
                 x.f = x.g + x.h
                 x.parent = s # we now get to x from state s
@@ -99,6 +107,7 @@ def computePath(start, goal, Maze):
                     if y.row == x.row and y.col == x.col:
                             openList.remove(y)
                 heapq.heappush(openList, x)
+                #print(openList)
 
     return None ## failed to find
 
@@ -127,8 +136,6 @@ def printVisibleNodes(Maze):#prints nodes seen while performing search
         for j, cell in enumerate(row):
             visible[i][j] = Maze[i][j].visible
         print (visible[i])
-
-
 #*** NEED****
 # Open list that supports nodes in a heap structure ordered by f(s)=h(s)+g(s) for tie breaker cases
 # Closed list (2D array or list) 
@@ -158,7 +165,13 @@ if __name__ == "__main__":
     while start.row != goal.row or start.col != goal.col:
         counter = counter + 1
         start.search = counter 
-        sol = computePath(start, goal, Maze)
+        goal.search = counter
+        start.g = 0
+        goal.g = 1000000
+        sol = computePath(start, goal, Maze, counter)
+        print("compute path number: ", counter,sol)
+        printVisibleNodes(Maze)
+
         if sol is None:
             print("No solution found")
             exit() 
@@ -166,15 +179,19 @@ if __name__ == "__main__":
             if Z[x[0]][x[1]] == 1:#checks if nodes on our A* path are blocked
                 break
             start = Maze[x[0]][x[1]]
+            print(start.row,start.col)
+            print(goal.row,goal.col)
             Maze = updateVisibleNodes(start, Maze)#update visible nodes
-        
+
         #print(start.row, " ", start.col) # prints the end of our solution
 
-    start = Maze[spos[0]][spos[1]]
+    start = Maze[0][0]
+    print("*******")
     sol = goThroughTree(goal,start)
     print(sol)
     showPath(sol,Z)
     printVisibleNodes(Maze)
+    print("A* executes ", counter, "times")
     
     
 
