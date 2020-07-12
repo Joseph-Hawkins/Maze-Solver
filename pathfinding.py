@@ -75,7 +75,7 @@ def isInClosedList(closedList, node):
     return False
 
 def computePath(start, goal, Maze, counter):
-    print("current start position", start.row, start.col)
+    ##print("current start position", start.row, start.col)
     openList = [] ##initialize Open List
     heapq.heappush(openList,start)
     closedList = []
@@ -84,7 +84,7 @@ def computePath(start, goal, Maze, counter):
         ##print(s.row, " ", s.col)
 
         if s.row == goal.row and s.col == goal.col:
-            print("*****PATH FOUND!*****")
+            ##print("*****PATH FOUND!*****")
             return goThroughTree(s,start)
    
         if isInClosedList(closedList, s):
@@ -162,6 +162,7 @@ if __name__ == "__main__":
     Maze = updateVisibleNodes(start, Maze)#update visible nodes
     goal = Maze[gpos[0]][gpos[1]]
 
+    fsol = []
     while start.row != goal.row or start.col != goal.col:
         counter = counter + 1
         start.search = counter 
@@ -169,8 +170,8 @@ if __name__ == "__main__":
         start.g = 0
         goal.g = 1000000
         sol = computePath(start, goal, Maze, counter)
-        print("compute path number: ", counter,sol)
-        printVisibleNodes(Maze)
+        ##print("compute path number: ", counter,sol)
+        ##printVisibleNodes(Maze)
 
         if sol is None:
             print("No solution found")
@@ -179,18 +180,17 @@ if __name__ == "__main__":
             if Z[x[0]][x[1]] == 1:#checks if nodes on our A* path are blocked
                 break
             start = Maze[x[0]][x[1]]
-            print(start.row,start.col)
-            print(goal.row,goal.col)
+            fsol.append((start.row,start.col))
+
             Maze = updateVisibleNodes(start, Maze)#update visible nodes
 
         #print(start.row, " ", start.col) # prints the end of our solution
 
-    start = Maze[0][0]
+    start = Maze[spos[0]][spos[1]]
     print("*******")
-    sol = goThroughTree(goal,start)
-    print(sol)
-    showPath(sol,Z)
-    printVisibleNodes(Maze)
+    print(fsol)
+    showPath(fsol,Z)
+    ##printVisibleNodes(Maze)
     print("A* executes ", counter, "times")
     
     
