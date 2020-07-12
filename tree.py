@@ -1,5 +1,5 @@
 class Node:
-    def __init__(self, parent, position, gPosition):
+    def __init__(self, parent, position, gPosition, alg):
         self.parent = parent
         self.row = position[0]
         self.col = position[1]
@@ -9,19 +9,27 @@ class Node:
         self.search = 0
         self.visible = 0
         self.ctype = 0
+        self.alg = alg       ##true means large g, false means little g
     def __cmp__(self, other): # for putting nodes into the heap
         return cmp(self.f, other.f)
 
-    def __lt__(self, other): ## for <
-        if self.f < other.f:
-            return True
+    ##def __lt__(self, other): ## for large g
+       ## if self.f == other.f:
+         ##   return ((self.g>other.g))
+        ##else:
+          ##  return (self.f<other.f)
+
+    def __lt__(self, other): ## for smaller g
+        if self.alg == True:         
+            if self.f == other.f:
+               return ((self.g>other.g))
+            else:
+                return (self.f<other.f)
         else:
-            return False
-    def __le__(self,other):  ##for <=
-        if self.f <= other.f:
-            return True
-        else:
-            return False
+            if self.f == other.f:
+               return ((self.g<other.g))
+            else:
+                return (self.f<other.f)
         
     def manhattan(self, gPosition): #gives the manhattan distance from current node to the goal node
         # write this function so it will take nodes as inputs

@@ -13,12 +13,17 @@ from tree import Node
 height=10 # change later when maze gets larger
 width=10
 
-def initializeMaze(Z, gPosition):   ##creates Nodes for each cell in the grid
+def initializeMaze(Z, gPosition, algo):   ##creates Nodes for each cell in the grid
+
+    gtype = True
+    if algo == "s":
+        gtype = False
+    
     Maze = [[None for _ in range(height)] for _ in range(width)]
 
     for i, row in enumerate(Z):
         for j, cell in enumerate(row):
-            Maze[i][j] = Node(None,(i,j),gPosition)
+            Maze[i][j] = Node(None,(i,j),gPosition, gtype)
             if Z[i][j] == 1:
                 Maze[i][j].ctype = 1
             if Z[i][j] == 2:
@@ -150,17 +155,29 @@ if __name__ == "__main__":
     if sys.argv[2] == "w":
         path = "arrs\\backTrackerMazes\\" + sys.argv[1]
 
+    alg = sys.argv[3] ##l forward large g, s for forward small g, b for backward, a for adaptive
+
+        
     Z = np.loadtxt(path, delimiter = ' ').astype(int) 
     print(Z)
     counter = 0
     #find the start and goal nodes
     gpos = findGoal(Z)
     spos = findStart(Z)
-    Maze = initializeMaze(Z,gpos);  ## initial the maze which is like a gridworld
+    if alg == "b":
+        Z[gpos[0]][gpos[1]] = 2
+        Z[spos[0]][spos[1]] = 3
+        temp = gpos
+        gpos=spos
+        spos=temp
 
+    Maze = initializeMaze(Z,gpos, alg);  ## initial the maze which is like a gridworld
+
+   
     start = Maze[spos[0]][spos[1]]
-    Maze = updateVisibleNodes(start, Maze)#update visible nodes
     goal = Maze[gpos[0]][gpos[1]]
+
+    Maze = updateVisibleNodes(start, Maze)#update visible nodes
 
     fsol = []
     while start.row != goal.row or start.col != goal.col:
