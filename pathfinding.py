@@ -12,6 +12,7 @@ from tree import Node
 
 height=10 # change later when maze gets larger
 width=10
+expanded = 0;
 
 def initializeMaze(Z, gPosition, algo):   ##creates Nodes for each cell in the grid
 
@@ -79,11 +80,9 @@ def isInClosedList(closedList, node):
             return True
     return False
 
-def computePath(start, goal, Maze, counter):
+def computePath(start, goal, Maze, counter, openList, closedList):
     ##print("current start position", start.row, start.col)
-    openList = [] ##initialize Open List
     heapq.heappush(openList,start)
-    closedList = []
     while openList and goal.g >= (openList[0].g + openList[0].h): # if openList is empty or if no shorter path is found we exit 
         s = heapq.heappop(openList)
         ##print(s.row, " ", s.col)
@@ -95,6 +94,8 @@ def computePath(start, goal, Maze, counter):
         if isInClosedList(closedList, s):
             continue
         closedList.append(s)
+        global expanded
+        expanded = expanded + 1
         neighbors = getNeighbors(Maze, s, goal)
         for x in neighbors:#for all actions a in A(s)
             if x.search < counter:#reset nodes
@@ -141,6 +142,11 @@ def printVisibleNodes(Maze):#prints nodes seen while performing search
         for j, cell in enumerate(row):
             visible[i][j] = Maze[i][j].visible
         print (visible[i])
+
+def adaptiveUpdate(closedList, fval):
+    for x in closedList:
+        x.h = fval-x.g
+
 #*** NEED****
 # Open list that supports nodes in a heap structure ordered by f(s)=h(s)+g(s) for tie breaker cases
 # Closed list (2D array or list) 
@@ -186,7 +192,9 @@ if __name__ == "__main__":
         goal.search = counter
         start.g = 0
         goal.g = 1000000
-        sol = computePath(start, goal, Maze, counter)
+        closedList = []
+        openList = []
+        sol = computePath(start, goal, Maze, counter, openList, closedList)
         ##print("compute path number: ", counter,sol)
         ##printVisibleNodes(Maze)
 
@@ -200,7 +208,8 @@ if __name__ == "__main__":
             fsol.append((start.row,start.col))
 
             Maze = updateVisibleNodes(start, Maze)#update visible nodes
-
+        if alg == 'a':
+            adaptiveUpdate(closedList, goal.g)
         #print(start.row, " ", start.col) # prints the end of our solution
 
     start = Maze[spos[0]][spos[1]]
@@ -209,7 +218,8 @@ if __name__ == "__main__":
     showPath(fsol,Z)
     ##printVisibleNodes(Maze)
     print("A* executes ", counter, "times")
-    
+    print("Algorithim expands ", expanded, "times")
+
     
 
 
