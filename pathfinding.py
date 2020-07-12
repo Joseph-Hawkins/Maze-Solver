@@ -117,7 +117,7 @@ def updateVisibleNodes(s, Maze):#updates surrounding squares that become visible
     if s.col + 1 in range(width) and Maze[s.row][s.col+1].visible == 0:
         Maze[s.row][s.col+1].visible = 1 #make eastern neighbor visible
     if s.col - 1 in range(width) and Maze[s.row][s.col-1].visible == 0:
-        Maze[s.row][s.col+1].visible = 1 #make western neighbor visible
+        Maze[s.row][s.col-1].visible = 1 #make western neighbor visible
     return Maze
 
 def printVisibleNodes(Maze):#prints nodes seen while performing search
@@ -161,7 +161,7 @@ if __name__ == "__main__":
         sol = computePath(start, goal, Maze)
         if sol is None:
             print("No solution found")
-            stop
+            exit() 
         for x in sol:
             if Z[x[0]][x[1]] == 1:#checks if nodes on our A* path are blocked
                 break
