@@ -207,13 +207,7 @@ if __name__ == "__main__":
     # find the start and goal nodes
     gpos = findGoal(Z)
     spos = findStart(Z)
-    if alg == "b":
-        Z[gpos[0]][gpos[1]] = 50
-        Z[spos[0]][spos[1]] = 51
-        temp = gpos
-        gpos = spos
-        spos = temp
-
+    
     # initial the maze which is like a gridworld
     Maze = initializeMaze(Z, gpos, alg)
 
@@ -231,13 +225,27 @@ if __name__ == "__main__":
         goal.g = 1000000
         closedList = []
         openList = []
-        sol = computePath(start, goal, Maze, counter, openList, closedList)
+
+        if alg == "b":
+            start.g = 1000000
+            goal.g = 0
+            goal.h = start.h
+            goal.f = goal.g+goal.f
+            start.h = 0
+            start.f = start.g + start.h
+            sol = computePath(goal, start, Maze, counter, openList, closedList)
+            ##print(sol)
+            sol.reverse()
+            sol.append((goal.row,goal.col))
+            sol.pop(0)
+        else:
+            sol = computePath(start, goal, Maze, counter, openList, closedList)
         ##print("compute path number: ", counter,sol)
         # printVisibleNodes(Maze)
 
         if sol is None:
             print("No solution found")
-            statReport(sol, sys.argv[1], counter, expanded, Z)
+            statReport(sol, sys.argv[1], counter, expanded, Z, alg)
             # handle report for no solution
             exit()
         for x in sol:
@@ -245,6 +253,7 @@ if __name__ == "__main__":
                 break
             start = Maze[x[0]][x[1]]
             fsol.append((start.row, start.col))
+            ##print(fsol)
 
             Maze = updateVisibleNodes(start, Maze)  # update visible nodes
         if alg == 'a':
