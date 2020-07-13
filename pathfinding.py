@@ -27,7 +27,7 @@ def initializeMaze(Z, gPosition, algo):  # creates Nodes for each cell in the gr
 
 
 def findStart(Z):  # gets the coordinate of the start position
-    start = np.where((Z == 2))  # starting position has value of 2
+    start = np.where((Z == 50))  # starting position has value of 2
     row = start[0][0]
     column = start[1][0]
     #print("start position:", "(", row, ",", column, ")")
@@ -35,7 +35,7 @@ def findStart(Z):  # gets the coordinate of the start position
 
 
 def findGoal(Z):  # gets the coordinate of the goal position
-    goal = np.where((Z == 3))  # goal position has value of 3
+    goal = np.where((Z == 51))  # goal position has value of 3
     row = goal[0][0]
     column = goal[1][0]
     #print("goal position:", "(", row, ",", column, ")")
@@ -123,7 +123,7 @@ def computePath(start, goal, Maze, counter, openList, closedList):
 def showPath(sol, Z):  # prints path computed by A*
     for x in sol:
         Z[x[0]][x[1]] = 9  # change path to *'s
-    Z[goal.row][goal.col] = 3
+    Z[goal.row][goal.col] = 51
     return Z
     # change so it writes into a text file
 
@@ -157,28 +157,38 @@ def adaptiveUpdate(closedList, fval):
 
 
 # writes algorithm details to a file
-def statReport(sol, maze, algExecuted, expansions, Z):
+def statReport(sol, maze, algExecuted, expansions, Z, alg):
+
+    if os.path.exists("sol") == False:
+        os.mkdir("sol")
+
     fileName = sys.argv[4]
-    with open(fileName, 'a') as f:
-        f.write('Maze file: ' + maze + '\n')
-        f.write('A* executions: ' + str(algExecuted) + '\n')
-        f.write('Expanded Cells: ' + str(expansions) + '\n')
-        if sol is not None:
-            f.write('Path length: ' + str(len(sol)) + '\n')
-        f.write('Solution: ')
-        if sol is None:  # unsolvable mazes
-            f.write('no Solution')
-            f.write('\n' + '\n')
-            f.close()
-            return
-        for item in sol:
-            f.write(str(item))
-        f.write('\n' + '\n')
-    f.close()
+    mazeno = maze[:-4] + alg
+    result = ""
+    
     plt.figure()
     plt.imshow(Z, cmap=plt.cm.plasma, interpolation='nearest')
     plt.xticks([]), plt.yticks([])
-    plt.show()
+    plt.savefig("sol/maze{}.png".format(mazeno))
+    ##plt.show()
+    
+    with open(fileName, 'a') as f:
+        result = result + 'Maze file: ' + maze + '\n'
+        result = result + 'A* executions: ' + str(algExecuted) + '\n'
+        result = result + 'Expanded Cells: ' + str(expansions) + '\n'
+        if sol is not None:
+            result = result + 'Path length: ' + str(len(sol)) + '\n'
+        result = result + 'Solution: '
+        if sol is None:  # unsolvable mazes
+            result = result + 'no Solution'
+            result = result + '\n' + '\n'
+        else :
+            for item in sol:
+                result = result + (str(item))
+                result = result + '\n' + '\n'
+        f.write(result)
+        f.close()
+   
 
 
 if __name__ == "__main__":
@@ -198,8 +208,8 @@ if __name__ == "__main__":
     gpos = findGoal(Z)
     spos = findStart(Z)
     if alg == "b":
-        Z[gpos[0]][gpos[1]] = 2
-        Z[spos[0]][spos[1]] = 3
+        Z[gpos[0]][gpos[1]] = 50
+        Z[spos[0]][spos[1]] = 51
         temp = gpos
         gpos = spos
         spos = temp
@@ -249,4 +259,7 @@ if __name__ == "__main__":
 
     #print("A* executes ", counter, "times")
     #print("Algorithim expands ", expanded, "times")
-    statReport(fsol, sys.argv[1], counter, expanded, Z)
+    statReport(fsol, sys.argv[1], counter, expanded, Z, alg)
+    
+    
+    

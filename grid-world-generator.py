@@ -14,12 +14,12 @@ def pickStartEnd(Z, width, height):
     A, B = rr.choice(range(0, height)), rr.choice(range(0, width))
     while Z[A][B] != 1:
         A, B = rr.choice(range(0, height)), rr.choice(range(0, width))
-    Z[A][B] = 2
+    Z[A][B] = 50
 
     C, D = rr.choice(range(0, height)), rr.choice(range(0, width))
     while Z[C][D] != 1 and C != A and D != B:
         C, D = rr.choice(range(0, height)), rr.choice(range(0, width))
-    Z[C][D] = 3
+    Z[C][D] = 51
 
 
 def backTrackerMaze(number, width=10, height=10):
