@@ -4,11 +4,14 @@ import fnmatch
 import glob
 import sys
 import bisect
-
+import multiprocessing
 
 def filebrowser(ext=""):
     return [f for f in glob.glob(f"*{ext}")]
 
+def solveMaze(command):
+    os.system(command)
+    print("this command: ", command, " is done")
 
 if __name__ == "__main__":
     print("Lets solve some mazes \n")
@@ -45,12 +48,20 @@ if __name__ == "__main__":
     for x in reports:  # clears any data that is in the reports
         open(x, 'w')
 
+    multiprocessing.freeze_support()
+    num_proc = os.cpu_count()
+    pool = multiprocessing.Pool(processes = num_proc)
+    commands = []
     # execute all mazes for all algorithms
     for i in range(4):  # execute all algorithms
         for maze in mazes:  # executes all backtracker mazes
             command = "Python pathfinding.py " + maze + \
                 system + algorithms[i] + reports[i]
-            # print(command)
-            os.system(command)
+            commands.append(command)
+            ##os.system(command)
+
+    pool.map(solveMaze, commands)
+    pool.close()
+    pool.join()
 
     # demo mode vs report mode

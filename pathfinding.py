@@ -10,8 +10,8 @@ import IPython
 import heapq
 from tree import Node
 
-height = 10  # change later when maze gets larger
-width = 10
+height = 101  # change later when maze gets larger
+width = 101
 expanded = 0
 
 
@@ -123,7 +123,6 @@ def computePath(start, goal, Maze, counter, openList, closedList):
 def showPath(sol, Z):  # prints path computed by A*
     for x in sol:
         Z[x[0]][x[1]] = 9  # change path to *'s
-    Z[goal.row][goal.col] = 51
     return Z
     # change so it writes into a text file
 
@@ -263,9 +262,11 @@ if __name__ == "__main__":
     start = Maze[spos[0]][spos[1]]
     # print(fsol)
 
+    
     Z = showPath(fsol, Z)
     # printVisibleNodes(Maze)
-
+    Z[goal.row][goal.col] = 51
+    Z[spos[0]][spos[1]] = 50
     #print("A* executes ", counter, "times")
     #print("Algorithim expands ", expanded, "times")
     statReport(fsol, sys.argv[1], counter, expanded, Z, alg)

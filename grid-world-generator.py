@@ -22,7 +22,7 @@ def pickStartEnd(Z, width, height):
     Z[C][D] = 51
 
 
-def backTrackerMaze(number, width=10, height=10):
+def backTrackerMaze(number, width=101, height=101):
 
     shape = (height, width)
     # Build actual maze
