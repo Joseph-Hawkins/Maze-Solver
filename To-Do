@@ -1,3 +1,75 @@
-Implement; Repeated Forward A*, Repeated Backward A*, Adaptive A*, 
+https://docs.google.com/document/d/1mi00OD55feP9nWOaXA-vyMi_iruVFVvbD5oMBX1ofcU/edit?usp=sharing 
 
-https://docs.google.com/document/d/1mi00OD55feP9nWOaXA-vyMi_iruVFVvbD5oMBX1ofcU/edit?usp=sharing
+run variations of our algorithm on the gridworlds (forward, backward, adaptive
+create graphics of the solved mazes 
+
+
+Topics for presentation
+
+
+#0 
+
+#2 effects of ties between large and small g
+	data to store; path lengths, total times A* is ran, number of times we expand nodes
+
+#3 forward vs backward
+
+#5 forward A* vs adaptive A*
+
+#6 Memory issues
+
+
+
+Can we cut down on runtime?
+
+isInClosedList: checks every element of the closed list, can we create a hashtable instead?
+	end of pg5 of assignment description
+	never iterate over all cells except to initialize them
+
+
+
+
+
+
+
+
+
+
+
+
+
+TO-DO before coming back to show allen
+
+****Data driven script****
+store data about each algorithms performance
+	instead of printing to the screen write it to a file 
+
+	
+	
+make it possible to make graphics want?
+test on large mazes
+
+
+****Demo driven script****
+create pictures and show performance for a few mazes
+every time we run the program print out the final path in graphics where the path, start, end, blocked and unblocked are seperate colors
+details about the search I.e path lengths, total A*s performed, number of nodes expanded
+
+
+
+
+
+
+We need to generate a report for: 
+repeated forward A* (small g) 
+repeated forward A* (large g)
+backwards A*
+adaptive A*
+
+
+Writing to file formatting 
+maze file name
+A* executions
+# of expanded cells
+path length
+solution (path)

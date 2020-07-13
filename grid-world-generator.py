@@ -11,62 +11,64 @@ import IPython
 
 def pickStartEnd(Z, width, height):
 
-    A,B = rr.choice(range(0,height)), rr.choice(range(0,width))
-    while Z[A][B]!=1:
-        A,B = rr.choice(range(0,height)), rr.choice(range(0,width))
+    A, B = rr.choice(range(0, height)), rr.choice(range(0, width))
+    while Z[A][B] != 1:
+        A, B = rr.choice(range(0, height)), rr.choice(range(0, width))
     Z[A][B] = 2
-    
-    C,D = rr.choice(range(0,height)), rr.choice(range(0,width))
-    while Z[C][D]!=1 and C!=A and D!=B:
-        C,D = rr.choice(range(0,height)), rr.choice(range(0,width))
+
+    C, D = rr.choice(range(0, height)), rr.choice(range(0, width))
+    while Z[C][D] != 1 and C != A and D != B:
+        C, D = rr.choice(range(0, height)), rr.choice(range(0, width))
     Z[C][D] = 3
-    
+
+
 def backTrackerMaze(number, width=10, height=10):
-   
-    shape = (height,width)
+
+    shape = (height, width)
     # Build actual maze
-    Z = np.ones(shape, dtype=int) # Maze-grid: 1's are black, 0's are white
+    Z = np.ones(shape, dtype=int)  # Maze-grid: 1's are black, 0's are white
 
     # Inititally set all cells as unvisited.
-    Y = np.zeros(shape, dtype=bool) # Visted or not
-    
+    Y = np.zeros(shape, dtype=bool)  # Visted or not
+
     # stack of visted cells
     stack = []
-    ## Recursive backtracker
+    # Recursive backtracker
     # 1 Make the initial cell the current cell and mark it as visited.
     # Random Initial cell
-    A,B = rr.choice(range(0,(shape[0]),2)), rr.choice(range(0,(shape[1]),2))
+    A, B = rr.choice(range(0, (shape[0]), 2)), rr.choice(
+        range(0, (shape[1]), 2))
 
-    # Making it the current cell   
+    # Making it the current cell
     Z[A][B] = 0
-    # Marking it as visited 
+    # Marking it as visited
     Y[A][B] = 1
-    stack.append([A,B])
+    stack.append([A, B])
 
     # 2 While there are unvisited cells
-    while ( not Y.all()):
-        #print(A,B)
+    while (not Y.all()):
+        # print(A,B)
         # 2.1 If the current cell has any neighbors which have not been visited
         nebs = []
         walls = []
-        
-        if A+2 in range(height) and Y[A+2][B]==0:
-            nebs.append([A+2,B])
-            walls.append([A+1,B])
-        if A-2 in range(height) and Y[A-2][B]==0:
-            nebs.append([A-2,B])
-            walls.append([A-1,B])
-        if B+2 in range(width) and Y[A][B+2]==0:
-            nebs.append([A,B+2])
-            walls.append([A,B+1])
-        if B-2 in range(width) and Y[A][B-2]==0:
-            nebs.append([A,B-2])
-            walls.append([A,B-1])
-        if nebs: 
+
+        if A+2 in range(height) and Y[A+2][B] == 0:
+            nebs.append([A+2, B])
+            walls.append([A+1, B])
+        if A-2 in range(height) and Y[A-2][B] == 0:
+            nebs.append([A-2, B])
+            walls.append([A-1, B])
+        if B+2 in range(width) and Y[A][B+2] == 0:
+            nebs.append([A, B+2])
+            walls.append([A, B+1])
+        if B-2 in range(width) and Y[A][B-2] == 0:
+            nebs.append([A, B-2])
+            walls.append([A, B-1])
+        if nebs:
             # 2.1.1 Choose randomly one of the unvisited neighbors
             cho = rr.choice(range(len(nebs)))
             # 2.1.2 Push the current cell to the stack
-            stack.append([A,B])
+            stack.append([A, B])
             # 2.1.3 Remove the wall between the current cell and the chosen cell
             Z[nebs[cho][0]][nebs[cho][1]] = 0
             Z[walls[cho][0]][walls[cho][1]] = 0
@@ -76,7 +78,7 @@ def backTrackerMaze(number, width=10, height=10):
             Y[nebs[cho][0]][nebs[cho][1]] = 1
             Y[walls[cho][0]][walls[cho][1]] = 1
 
-            stack.append([A,B])
+            stack.append([A, B])
         # 2.2. Else if stack is not empty
         elif stack:
             if A+1 in range(height):
@@ -95,24 +97,25 @@ def backTrackerMaze(number, width=10, height=10):
         else:
             break
 
-    pickStartEnd(Z,height,width)
+    pickStartEnd(Z, height, width)
     plt.figure()
     plt.imshow(Z, cmap=plt.cm.plasma, interpolation='nearest')
     plt.xticks([]), plt.yticks([])
-    plt.savefig("pics/backTrackerMazes/backTrackerMaze{0:0=2d}.png".format(number))
-    np.savetxt("arrs/backTrackerMazes/{0:0=2d}.txt".format(number),Z,fmt='%d')
+    plt.savefig(
+        "pics/backTrackerMazes/backTrackerMaze{0:0=2d}.png".format(number))
+    np.savetxt(
+        "arrs/backTrackerMazes/{0:0=2d}.txt".format(number), Z, fmt='%d')
+
 
 def randGridMaze(number, width=10, height=10):
-    shape = (height,width)
-    Z = np.random.choice([0,1], size=shape, p=[.70,.30])
-    pickStartEnd(Z,height,width)
+    shape = (height, width)
+    Z = np.random.choice([0, 1], size=shape, p=[.70, .30])
+    pickStartEnd(Z, height, width)
     plt.figure()
     plt.imshow(Z, cmap=plt.cm.plasma, interpolation='nearest')
     plt.xticks([]), plt.yticks([])
     plt.savefig("pics/randGrid/maze{0:0=2d}.png".format(number))
-    np.savetxt("arrs/randGrid/{0:0=2d}.txt".format(number),Z,fmt='%d')
-    
-
+    np.savetxt("arrs/randGrid/{0:0=2d}.txt".format(number), Z, fmt='%d')
 
 
 if __name__ == "__main__":
@@ -122,20 +125,19 @@ if __name__ == "__main__":
         shutil.rmtree("pics")
     if os.path.exists("maze.png"):
         os.remove("maze.png")
-    
-    for i in ["", "/backTrackerMazes/", "/randGrid/"]: 
+
+    for i in ["", "/backTrackerMazes/", "/randGrid/"]:
         os.mkdir("pics"+i)
         os.mkdir("arrs"+i)
 
-    ### specify the number of grids you want to generate
+    # specify the number of grids you want to generate
     n_grids = int(sys.argv[1])
-    
 
     multiprocessing.freeze_support()
     num_proc = multiprocessing.cpu_count()
-    ## for python 3.6 uncomment the line below, and comment the line above
+    # for python 3.6 uncomment the line below, and comment the line above
     # num_proc = os.cpu_count()
-    pool = multiprocessing.Pool(processes = num_proc)
+    pool = multiprocessing.Pool(processes=num_proc)
 
     nn = [i for i in range(n_grids)]
     pool.map(randGridMaze, nn)
@@ -145,4 +147,3 @@ if __name__ == "__main__":
 
     pool.close()
     pool.join()
-      
