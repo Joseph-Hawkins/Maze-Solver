@@ -211,6 +211,7 @@ if __name__ == "__main__":
     # handles mac or windows path differences
     if sys.argv[2] == "m":
         path = "arrs/backTrackerMazes/" + sys.argv[1]
+        #path = "arrs/randGrid/" + sys.argv[1]
     if sys.argv[2] == "w":
         path = "arrs\\backTrackerMazes\\" + sys.argv[1]
 

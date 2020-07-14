@@ -107,7 +107,7 @@ def backTrackerMaze(number, width=101, height=101):
         "arrs/backTrackerMazes/{0:0=2d}.txt".format(number), Z, fmt='%d')
 
 
-def randGridMaze(number, width=10, height=10):
+def randGridMaze(number, width=101, height=101):
     shape = (height, width)
     Z = np.random.choice([0, 1], size=shape, p=[.70, .30])
     pickStartEnd(Z, height, width)

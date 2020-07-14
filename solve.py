@@ -56,10 +56,13 @@ if __name__ == "__main__":
     pool = multiprocessing.Pool(processes=num_proc)
     commands = []
     # execute all mazes for all algorithms
-    # for i in range(4):  # execute all algorithms
-    for maze in mazes:  # executes all backtracker mazes
+# for i in range(4):  # execute all algorithms
+    missingMazes = ['88.txt', '89.txt', '90.txt']
+    for maze in missingMazes:  # executes all backtracker mazes
+        print("Python pathfinding.py " + maze +
+              system + algorithms[1] + reports[1])
         command = "Python pathfinding.py " + maze + \
-            system + algorithms[2] + reports[2]
+            system + algorithms[1] + reports[1]
         commands.append(command)
         # os.system(command)
 
