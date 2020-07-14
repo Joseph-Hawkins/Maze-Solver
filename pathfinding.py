@@ -1,6 +1,7 @@
 import numpy as np
 import random as rr
 import matplotlib.pyplot as plt
+import matplotlib.colors
 import os
 import sys
 import shutil
@@ -81,6 +82,15 @@ def isInClosedList(closedList, node):
     return False
 
 
+def goThroughTreeBackward(goal, start):
+    solution = []
+    while(goal is not start):
+        coord = [goal.row, goal.col]
+        solution.append(coord)
+        goal = goal.parent
+    return solution
+
+
 def computePath(start, goal, Maze, counter, openList, closedList):
     ##print("current start position", start.row, start.col)
     heapq.heappush(openList, start)
@@ -88,10 +98,13 @@ def computePath(start, goal, Maze, counter, openList, closedList):
     while openList and goal.g >= (openList[0].g + openList[0].h):
         s = heapq.heappop(openList)
         ##print(s.row, " ", s.col)
-
+        global sType
         if s.row == goal.row and s.col == goal.col:
             ##print("*****PATH FOUND!*****")
-            return goThroughTree(s, start)
+            if sType == 'b':
+                return goThroughTreeBackward(goal, start)
+            else:
+                return goThroughTree(s, start)
 
         if isInClosedList(closedList, s):
             continue
@@ -108,6 +121,7 @@ def computePath(start, goal, Maze, counter, openList, closedList):
             if x.g > s.g+1:  # a cheaper cost has been found to reach state x
                 # print("test2")
                 x.g = s.g+1
+                # x.manhattan((goal.row, goal.col))  # for backwards
                 x.f = x.g + x.h
                 x.parent = s  # we now get to x from state s
                 # search through the open list and remove old g(x) this would take more time but reduce memory usage
@@ -164,30 +178,33 @@ def statReport(sol, maze, algExecuted, expansions, Z, alg):
     fileName = sys.argv[4]
     mazeno = maze[:-4] + alg
     result = ""
-    
+    # print(Z)
+    colorMap = matplotlib.colors.ListedColormap(
+        ["white", "black", "#ffed76", "#76bfff", "#ff769b"])
+    norm = matplotlib.colors.BoundaryNorm([-1, 0.5, 3, 10, 51, 53], colorMap.N)
     plt.figure()
-    plt.imshow(Z, cmap=plt.cm.plasma, interpolation='nearest')
+    plt.imshow(Z, cmap=colorMap, norm=norm, interpolation='nearest')
     plt.xticks([]), plt.yticks([])
     plt.savefig("sol/maze{}.png".format(mazeno))
-    ##plt.show()
-    
+    plt.close()
+    # plt.show()
+
     with open(fileName, 'a') as f:
         result = result + 'Maze file: ' + maze + '\n'
         result = result + 'A* executions: ' + str(algExecuted) + '\n'
         result = result + 'Expanded Cells: ' + str(expansions) + '\n'
         if sol is not None:
             result = result + 'Path length: ' + str(len(sol)) + '\n'
-        result = result + 'Solution: '
+        #result = result + 'Solution: '
         if sol is None:  # unsolvable mazes
             result = result + 'no Solution'
             result = result + '\n' + '\n'
-        else :
-            for item in sol:
-                result = result + (str(item))
-                result = result + '\n' + '\n'
+        else:
+            # for item in sol:
+            #    result = result + (str(item))
+            result = result + '\n' + '\n'
         f.write(result)
         f.close()
-   
 
 
 if __name__ == "__main__":
@@ -206,9 +223,14 @@ if __name__ == "__main__":
     # find the start and goal nodes
     gpos = findGoal(Z)
     spos = findStart(Z)
-    
-    # initial the maze which is like a gridworld
-    Maze = initializeMaze(Z, gpos, alg)
+
+    sType = sys.argv[3]
+
+    if alg == 'b':
+        Maze = initializeMaze(Z, spos, alg)
+
+    else:  # initial the maze which is like a gridworld
+        Maze = initializeMaze(Z, gpos, alg)
 
     start = Maze[spos[0]][spos[1]]
     goal = Maze[gpos[0]][gpos[1]]
@@ -233,9 +255,8 @@ if __name__ == "__main__":
             start.h = 0
             start.f = start.g + start.h
             sol = computePath(goal, start, Maze, counter, openList, closedList)
-            ##print(sol)
-            sol.reverse()
-            sol.append((goal.row,goal.col))
+            # print(sol)
+            sol.append((goal.row, goal.col))
             sol.pop(0)
         else:
             sol = computePath(start, goal, Maze, counter, openList, closedList)
@@ -244,7 +265,7 @@ if __name__ == "__main__":
 
         if sol is None:
             print("No solution found")
-            statReport(sol, sys.argv[1], counter, expanded, Z, alg)
+            statReport(fsol, sys.argv[1], counter, expanded, Z, alg)
             # handle report for no solution
             exit()
         for x in sol:
@@ -252,7 +273,7 @@ if __name__ == "__main__":
                 break
             start = Maze[x[0]][x[1]]
             fsol.append((start.row, start.col))
-            ##print(fsol)
+            # print(fsol)
 
             Maze = updateVisibleNodes(start, Maze)  # update visible nodes
         if alg == 'a':
@@ -262,7 +283,6 @@ if __name__ == "__main__":
     start = Maze[spos[0]][spos[1]]
     # print(fsol)
 
-    
     Z = showPath(fsol, Z)
     # printVisibleNodes(Maze)
     Z[goal.row][goal.col] = 51
@@ -270,6 +290,3 @@ if __name__ == "__main__":
     #print("A* executes ", counter, "times")
     #print("Algorithim expands ", expanded, "times")
     statReport(fsol, sys.argv[1], counter, expanded, Z, alg)
-    
-    
-    

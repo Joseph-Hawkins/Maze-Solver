@@ -1,0 +1,12 @@
+Maze file: 58.txt
+A* executions: 76
+Expanded Cells: 147941
+Path length: 157
+
+
+Maze file: 59.txt
+A* executions: 604
+Expanded Cells: 1104749
+Path length: 2070
+
+

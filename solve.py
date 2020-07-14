@@ -6,12 +6,15 @@ import sys
 import bisect
 import multiprocessing
 
+
 def filebrowser(ext=""):
     return [f for f in glob.glob(f"*{ext}")]
+
 
 def solveMaze(command):
     os.system(command)
     print("this command: ", command, " is done")
+
 
 if __name__ == "__main__":
     print("Lets solve some mazes \n")
@@ -50,15 +53,15 @@ if __name__ == "__main__":
 
     multiprocessing.freeze_support()
     num_proc = os.cpu_count()
-    pool = multiprocessing.Pool(processes = num_proc)
+    pool = multiprocessing.Pool(processes=num_proc)
     commands = []
     # execute all mazes for all algorithms
-    for i in range(4):  # execute all algorithms
-        for maze in mazes:  # executes all backtracker mazes
-            command = "Python pathfinding.py " + maze + \
-                system + algorithms[i] + reports[i]
-            commands.append(command)
-            ##os.system(command)
+    # for i in range(4):  # execute all algorithms
+    for maze in mazes:  # executes all backtracker mazes
+        command = "Python pathfinding.py " + maze + \
+            system + algorithms[2] + reports[2]
+        commands.append(command)
+        # os.system(command)
 
     pool.map(solveMaze, commands)
     pool.close()
